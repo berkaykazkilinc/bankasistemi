@@ -7,6 +7,8 @@ import com.bankaSistemi.Model.User;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class cusRepGUI extends JFrame {
     private JPanel wrapper;
@@ -56,6 +58,13 @@ public class cusRepGUI extends JFrame {
         tbl_userlist.setModel(mdl_userlist);
         tbl_userlist.getTableHeader().setReorderingAllowed(false);
 
+        btn_logout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                bankaGUI bankGUI = new bankaGUI();
+            }
+        });
     }
 
     public static void main(String[] args) {
