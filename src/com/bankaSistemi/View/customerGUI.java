@@ -41,17 +41,30 @@ public class customerGUI extends JFrame {
 
         // ModelUserList
         mdl_userlist = new DefaultTableModel();
-        Object[] col_userlist = {"Ad-Soyad", "TelefonNo", "TcNo", "Adres", "Email","Temsilci","Maaş(TL)","Kullanıcı Türü"};
+        Object[] col_userlist = {"Ad-Soyad", "TelefonNo", "TcNo", "Adres", "Email","Temsilci","Kullanıcı Türü"};
         mdl_userlist.setColumnIdentifiers(col_userlist);
-        Object[] firstRow = {"Mahmut Tuncer", "5057843214", "4403214789", "İstanbul", "mtuncer@hotmail.com","Ali","","Müşteri"};
+      /*  Object[] firstRow = {"Mahmut Tuncer", "5057843214", "4403214789", "İstanbul", "mtuncer@hotmail.com","Ali","","Müşteri"};
         Object[] secondRow = {"Kagan Can Baba", "5245289664", "58746512334", "Ankara", "kcbaba@hotmail.com","Ahmet","","Müşteri"};
         Object[] thirdRow = {"Ahmet Aslan", "5315284964", "79465123548", "Kırşehir", "a.aslan@hotmail.com","null","10000","Temsilci"};
         mdl_userlist.addRow(firstRow);
         mdl_userlist.addRow(secondRow);
-        mdl_userlist.addRow(thirdRow);
+        mdl_userlist.addRow(thirdRow);*/
 
         tbl_bilgiler.setModel(mdl_userlist);
         tbl_bilgiler.getTableHeader().setReorderingAllowed(false);
+
+        for (Customer obj : Customer.getCustomerList())
+        {
+            Object[] row = new Object[col_userlist.length];
+            row[0] = obj.getFullName();
+            row[1] = obj.getTelNo();
+            row[2] = obj.getTcNo();
+            row[3] = obj.getAdress();
+            row[4] = obj.getEmail();
+            row[5] = obj.getTemsilci();
+            row[6] = obj.getType();
+            mdl_userlist.addRow(row);
+        }
 
         btn_logout.addActionListener(e -> {
             dispose();
