@@ -46,7 +46,7 @@ public class Manager {
             e.printStackTrace();
         }
         if(obj==null){
-            Helper.showMessage("Böyle bir kullanı bulunamadı !");
+            Helper.showMessage("error");
             return false;
         }
         else {

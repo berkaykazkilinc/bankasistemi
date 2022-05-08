@@ -2,11 +2,14 @@ package com.bankaSistemi.View;
 
 import com.bankaSistemi.Helper.Config;
 import com.bankaSistemi.Helper.Helper;
+import com.bankaSistemi.Model.Credit;
 import com.bankaSistemi.Model.Currency;
 import com.bankaSistemi.Model.Salary;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class managerGUI extends JFrame {
 
@@ -23,7 +26,6 @@ public class managerGUI extends JFrame {
     private JButton paraBirimiEkleButton;
     private JButton kurOranıGüncelleButton;
     private JButton maaşBelirleButton;
-    private JButton gecikmeFaizOranıBelirleButton;
     private JButton btn_logout;
     private JLabel lbl_welcome;
     private JPanel pnl_top;
@@ -50,10 +52,13 @@ public class managerGUI extends JFrame {
     private JTextField fld_gecikme_faiz;
     private JLabel lbl_gecikme_faiz;
     private JScrollPane scrl_kredi;
+    private JLabel lbl_kredi_faiz;
     private DefaultTableModel mdl_dovizlist;
     private DefaultTableModel mdl_maaslist;
+    private DefaultTableModel mdl_kredilist;
     private Object [] row_doviz_list;
     private Object [] row_maas_list;
+    private Object [] row_kredi_list;
 
 
     public managerGUI () {
@@ -89,11 +94,23 @@ public class managerGUI extends JFrame {
         tbl_maas.setModel(mdl_maaslist);
         tbl_maas.getTableHeader().setReorderingAllowed(false);
 
+        // kredi tablosu
+
+        mdl_kredilist = new DefaultTableModel();
+        Object[] col_kredilist = {"Kredi Faiz Oranı","Gecikme Faiz Oranı","Oran Guncel Mi?","Kredi Oran ID"};
+        mdl_kredilist.setColumnIdentifiers(col_kredilist);
+
+        row_kredi_list = new Object[col_kredilist.length];
+
+        tbl_kredi.setModel(mdl_kredilist);
+        tbl_kredi.getTableHeader().setReorderingAllowed(false);
+
 
 
 
         loadDovizModel();
         loadMaasModel();
+        loadCreditModel();
 
         btn_logout.addActionListener(e -> {
             dispose();
@@ -179,6 +196,33 @@ public class managerGUI extends JFrame {
             }
 
         });
+        btn_kredi_faiz.addActionListener(e -> {
+            if(Helper.isFieldEmpty(fld_kredi_faiz) || Helper.isFieldEmpty(fld_gecikme_faiz)){
+                Helper.showMessage("fill");
+            }
+            else {
+
+                float kredi_faizOrani = Float.parseFloat(fld_kredi_faiz.getText());
+                float gecikme_faizOrani = Float.parseFloat(fld_gecikme_faiz.getText());
+                if(Credit.creditAdd(kredi_faizOrani,gecikme_faizOrani))
+                {
+                    Helper.showMessage("done");
+                    loadCreditModel();
+
+                    fld_kredi_faiz.setText(null);
+                    fld_gecikme_faiz.setText(null);
+                }
+                else {
+                    Helper.showMessage("error");
+                }
+
+
+
+            }
+
+
+
+        });
     }
 
 
@@ -206,6 +250,21 @@ public class managerGUI extends JFrame {
 
             row_maas_list[0] = obj.getMaas();
             mdl_maaslist.addRow(row_maas_list);
+        }
+    }
+    public void loadCreditModel(){
+        DefaultTableModel clearModel = (DefaultTableModel) tbl_kredi.getModel();
+        clearModel.setRowCount(0);
+
+        for(Credit obj : Credit.getCreditList())
+        {
+
+
+            row_kredi_list[0] = obj.getKredi_faiz_orani();
+            row_kredi_list[1] = obj.getGecikme_faiz_oranı();
+            row_kredi_list[2] = obj.isGuncellik();
+            row_kredi_list[3] = obj.getKredi_oran_id();
+            mdl_kredilist.addRow(row_kredi_list);
         }
     }
 
