@@ -1,15 +1,17 @@
 package com.bankaSistemi.View;
 
 import com.bankaSistemi.Helper.Config;
+import com.bankaSistemi.Helper.DBConnector;
 import com.bankaSistemi.Helper.Helper;
-import com.bankaSistemi.Model.Credit;
-import com.bankaSistemi.Model.Currency;
-import com.bankaSistemi.Model.Salary;
+import com.bankaSistemi.Model.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class managerGUI extends JFrame {
 
@@ -22,7 +24,7 @@ public class managerGUI extends JFrame {
     private JPanel pnl_cus;
     private JPanel pnl_sistem;
     private JButton sistemİlerletButton;
-    private JButton müşteriEkleButton;
+    private JButton btn_customer_add;
     private JButton paraBirimiEkleButton;
     private JButton kurOranıGüncelleButton;
     private JButton maaşBelirleButton;
@@ -53,20 +55,32 @@ public class managerGUI extends JFrame {
     private JLabel lbl_gecikme_faiz;
     private JScrollPane scrl_kredi;
     private JLabel lbl_kredi_faiz;
+    private JTextField fld_customer_name;
+    private JTextField fld_customer_telno;
+    private JTextField fld_customer_tcno;
+    private JTextField fld_customer_adress;
+    private JTextField fld_customer_password;
+    private JLabel lbl_musteri_ad;
+    private JLabel lbl_musteri_tel;
+    private JLabel lbl_musteri_tc;
+    private JLabel lbl_musteri_adres;
+    private JLabel lbl_musteri_sifre;
+    private JTextField fld_customer_eposta;
+    private JLabel lbl_customer_eposta;
     private DefaultTableModel mdl_dovizlist;
     private DefaultTableModel mdl_maaslist;
     private DefaultTableModel mdl_kredilist;
-    private Object [] row_doviz_list;
-    private Object [] row_maas_list;
-    private Object [] row_kredi_list;
+    private Object[] row_doviz_list;
+    private Object[] row_maas_list;
+    private Object[] row_kredi_list;
 
 
-    public managerGUI () {
+    public managerGUI() {
         this.add(wrapper);
-        setSize(600,550);
-        int x = Helper.screenLocationCenter("x",getSize());
-        int y = Helper.screenLocationCenter("y",getSize());
-        setLocation(x,y);
+        setSize(600, 550);
+        int x = Helper.screenLocationCenter("x", getSize());
+        int y = Helper.screenLocationCenter("y", getSize());
+        setLocation(x, y);
         setTitle(Config.PROJECT_TITTLE);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
@@ -75,7 +89,7 @@ public class managerGUI extends JFrame {
         // doviz tablosu
 
         mdl_dovizlist = new DefaultTableModel();
-        Object[] col_userlist = {"Doviz Adi","Kur Orani"};
+        Object[] col_userlist = {"Doviz Adi", "Kur Orani"};
         mdl_dovizlist.setColumnIdentifiers(col_userlist);
 
         row_doviz_list = new Object[col_userlist.length];
@@ -97,7 +111,7 @@ public class managerGUI extends JFrame {
         // kredi tablosu
 
         mdl_kredilist = new DefaultTableModel();
-        Object[] col_kredilist = {"Kredi Faiz Oranı","Gecikme Faiz Oranı","Oran Guncel Mi?","Kredi Oran ID"};
+        Object[] col_kredilist = {"Kredi Faiz Oranı", "Gecikme Faiz Oranı", "Oran Guncel Mi?", "Kredi Oran ID"};
         mdl_kredilist.setColumnIdentifiers(col_kredilist);
 
         row_kredi_list = new Object[col_kredilist.length];
@@ -106,32 +120,28 @@ public class managerGUI extends JFrame {
         tbl_kredi.getTableHeader().setReorderingAllowed(false);
 
 
-
-
         loadDovizModel();
         loadMaasModel();
         loadCreditModel();
+        CustomerRepresentative.temsilciMusteriSayisiDuzenleyici();
 
         btn_logout.addActionListener(e -> {
             dispose();
             bankaGUI bankGUI = new bankaGUI();
         });
         paraBirimiEkleButton.addActionListener(e -> {
-            if(Helper.isFieldEmpty(fld_dovizAd) || Helper.isFieldEmpty(fld_kurOrani)){
+            if (Helper.isFieldEmpty(fld_dovizAd) || Helper.isFieldEmpty(fld_kurOrani)) {
                 Helper.showMessage("fill");
-            }
-            else {
+            } else {
                 String doviz_adi = fld_dovizAd.getText();
                 float kur = Float.parseFloat(fld_kurOrani.getText());
-                if(Currency.currencyAdd(doviz_adi,kur))
-                {
+                if (Currency.currencyAdd(doviz_adi, kur)) {
                     Helper.showMessage("done");
                     loadDovizModel();
 
                     fld_dovizAd.setText(null);
                     fld_kurOrani.setText(null);
-                }
-                else {
+                } else {
                     Helper.showMessage("error");
                 }
 
@@ -139,21 +149,18 @@ public class managerGUI extends JFrame {
             }
         });
         kurOranıGüncelleButton.addActionListener(e -> {
-            if(Helper.isFieldEmpty(fld_update_dovizAd) || Helper.isFieldEmpty(fld_update_yeniKur)){
+            if (Helper.isFieldEmpty(fld_update_dovizAd) || Helper.isFieldEmpty(fld_update_yeniKur)) {
                 Helper.showMessage("fill");
-            }
-            else {
+            } else {
                 String doviz_adi = fld_update_dovizAd.getText();
                 float kur = Float.parseFloat(fld_update_yeniKur.getText());
-                if(Currency.currencyUpdate(doviz_adi,kur))
-                {
+                if (Currency.currencyUpdate(doviz_adi, kur)) {
                     Helper.showMessage("done");
                     loadDovizModel();
 
                     fld_update_dovizAd.setText(null);
                     fld_update_yeniKur.setText(null);
-                }
-                else {
+                } else {
                     Helper.showMessage("error");
                 }
 
@@ -161,20 +168,17 @@ public class managerGUI extends JFrame {
             }
         });
         btn_delete_doviz.addActionListener(e -> {
-            if(Helper.isFieldEmpty(fld_delete_doviz)){
+            if (Helper.isFieldEmpty(fld_delete_doviz)) {
                 Helper.showMessage("fill");
-            }
-            else {
+            } else {
                 String doviz_adi = fld_delete_doviz.getText();
-                if(Currency.currencyDelete(doviz_adi))
-                {
+                if (Currency.currencyDelete(doviz_adi)) {
                     Helper.showMessage("done");
                     loadDovizModel();
 
                     fld_delete_doviz.setText(null);
 
-                }
-                else {
+                } else {
                     Helper.showMessage("error");
                 }
 
@@ -183,55 +187,87 @@ public class managerGUI extends JFrame {
         });
         maaşBelirleButton.addActionListener(e -> {
             int maas = Integer.parseInt(fld_maas.getText());
-            if(Salary.salaryUpdate(maas))
-            {
+            if (Salary.salaryUpdate(maas)) {
                 Helper.showMessage("done");
                 loadMaasModel();
 
                 fld_maas.setText(null);
 
-            }
-            else {
+            } else {
                 Helper.showMessage("error");
             }
 
         });
         btn_kredi_faiz.addActionListener(e -> {
-            if(Helper.isFieldEmpty(fld_kredi_faiz) || Helper.isFieldEmpty(fld_gecikme_faiz)){
+            if (Helper.isFieldEmpty(fld_kredi_faiz) || Helper.isFieldEmpty(fld_gecikme_faiz)) {
                 Helper.showMessage("fill");
-            }
-            else {
+            } else {
 
                 float kredi_faizOrani = Float.parseFloat(fld_kredi_faiz.getText());
                 float gecikme_faizOrani = Float.parseFloat(fld_gecikme_faiz.getText());
-                if(Credit.creditAdd(kredi_faizOrani,gecikme_faizOrani))
-                {
+                if (Credit.creditAdd(kredi_faizOrani, gecikme_faizOrani)) {
                     Helper.showMessage("done");
                     loadCreditModel();
 
                     fld_kredi_faiz.setText(null);
                     fld_gecikme_faiz.setText(null);
-                }
-                else {
+                } else {
                     Helper.showMessage("error");
                 }
-
 
 
             }
 
 
+        });
+        // müşteri sayısı güncelleme denemek için
+        sistemİlerletButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CustomerRepresentative.temsilciMusteriSayisiDuzenleyici();
+            }
+        });
+        // gerçek müşteri ekleme
+        btn_customer_add.addActionListener(e -> {
+            if (Helper.isFieldEmpty(fld_customer_name) || Helper.isFieldEmpty(fld_customer_adress)|| Helper.isFieldEmpty(fld_customer_tcno)|| Helper.isFieldEmpty(fld_customer_telno)|| Helper.isFieldEmpty(fld_customer_eposta)|| Helper.isFieldEmpty(fld_customer_password)) {
+                Helper.showMessage("fill");
+            } else {
+                CustomerRepresentative.temsilciMusteriSayisiDuzenleyici();
 
+                String temsilci_tc;
+
+                temsilci_tc = CustomerRepresentative.enAzMusteriliTemsilciBul();
+
+                String ad_soyad = fld_customer_name.getText();
+                String telefon = fld_customer_telno.getText();
+                String tc = fld_customer_tcno.getText();
+                String adres = fld_customer_adress.getText();
+                String e_posta = fld_customer_eposta.getText();
+                String sifre = fld_customer_password.getText();
+
+                if (Customer.customerAdd(ad_soyad, telefon, tc, adres, e_posta, temsilci_tc, sifre)) {
+                    Helper.showMessage("done");
+                    CustomerRepresentative.temsilciMusteriSayisiDuzenleyici();
+
+                    fld_customer_password.setText(null);
+                    fld_customer_adress.setText(null);
+                } else {
+                    Helper.showMessage("error");
+                }
+
+
+
+
+            }
         });
     }
 
 
-    public void loadDovizModel(){
+    public void loadDovizModel() {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_doviz.getModel();
         clearModel.setRowCount(0);
 
-        for(Currency obj : Currency.getCurrencyList())
-        {
+        for (Currency obj : Currency.getCurrencyList()) {
 
 
             row_doviz_list[0] = obj.getDoviz_turu();
@@ -240,24 +276,23 @@ public class managerGUI extends JFrame {
         }
     }
 
-    public void loadMaasModel(){
+    public void loadMaasModel() {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_maas.getModel();
         clearModel.setRowCount(0);
 
-        for(Salary obj : Salary.getSalaryList())
-        {
+        for (Salary obj : Salary.getSalaryList()) {
 
 
             row_maas_list[0] = obj.getMaas();
             mdl_maaslist.addRow(row_maas_list);
         }
     }
-    public void loadCreditModel(){
+
+    public void loadCreditModel() {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_kredi.getModel();
         clearModel.setRowCount(0);
 
-        for(Credit obj : Credit.getCreditList())
-        {
+        for (Credit obj : Credit.getCreditList()) {
 
 
             row_kredi_list[0] = obj.getKredi_faiz_orani();

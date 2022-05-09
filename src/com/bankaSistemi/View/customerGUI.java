@@ -53,7 +53,7 @@ public class customerGUI extends JFrame {
         tbl_bilgiler.setModel(mdl_userlist);
         tbl_bilgiler.getTableHeader().setReorderingAllowed(false);
 
-        for (Customer obj : Customer.getCustomerList())
+       /* for (Customer obj : Customer.getCustomerList())
         {
             Object[] row = new Object[col_userlist.length];
             row[0] = obj.getFullName();
@@ -64,7 +64,7 @@ public class customerGUI extends JFrame {
             row[5] = obj.getTemsilci();
             row[6] = obj.getType();
             mdl_userlist.addRow(row);
-        }
+        }*/
 
         btn_logout.addActionListener(e -> {
             dispose();

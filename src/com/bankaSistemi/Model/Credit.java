@@ -97,10 +97,7 @@ public class Credit {
                 e.printStackTrace();
             }
         }
-        else
-        {
-            System.out.println("deneme");
-        }
+
     }
 
     public static boolean creditAdd(float kredi_faizOrani,float gecikme_faizOrani)

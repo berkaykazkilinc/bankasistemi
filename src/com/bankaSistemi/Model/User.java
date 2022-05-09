@@ -69,28 +69,7 @@ public class User {
     }
 
 
-    public static ArrayList<User> getList() {
-        ArrayList<User> userList = new ArrayList<>();
-        String query = "SELECT * FROM user";
-        User obj;
-        try {
-            Statement st = DBConnector.getInstance().createStatement();
-            ResultSet rs = st.executeQuery(query);
-            while (rs.next()) {
-                obj = new User();
-                obj.setFullName(rs.getString("ad_soyad"));
-                obj.setAdress(rs.getNString("adres"));
-                obj.setEmail(rs.getNString("e_posta"));
-                obj.setTcNo(rs.getNString("tc_NO"));
-                obj.setTelNo(rs.getNString("telefon"));
-                obj.setType(rs.getNString("kullanıcı_turu"));
-                userList.add(obj);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return userList;
-    }
+
 
 }
 
