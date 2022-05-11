@@ -1,7 +1,6 @@
 package com.bankaSistemi.View;
 
 import com.bankaSistemi.Helper.Config;
-import com.bankaSistemi.Helper.DBConnector;
 import com.bankaSistemi.Helper.Helper;
 import com.bankaSistemi.Model.*;
 
@@ -9,9 +8,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 public class managerGUI extends JFrame {
 
@@ -67,12 +63,20 @@ public class managerGUI extends JFrame {
     private JLabel lbl_musteri_sifre;
     private JTextField fld_customer_eposta;
     private JLabel lbl_customer_eposta;
+    private JPanel pnl_islemtab_ozet;
+    private JTextField fld_islem_listele;
+    private JButton btn_islem_listele;
+    private JTable tbl_islemtab_ozet;
+    private JLabel txt_islem_miktari;
+    private JScrollPane scrl_islemtab_ozet;
     private DefaultTableModel mdl_dovizlist;
     private DefaultTableModel mdl_maaslist;
     private DefaultTableModel mdl_kredilist;
+    private DefaultTableModel mdl_islemlist;
     private Object[] row_doviz_list;
     private Object[] row_maas_list;
     private Object[] row_kredi_list;
+    private Object[] row_islem_list;
 
 
     public managerGUI() {
@@ -119,6 +123,15 @@ public class managerGUI extends JFrame {
         tbl_kredi.setModel(mdl_kredilist);
         tbl_kredi.getTableHeader().setReorderingAllowed(false);
 
+        // islem tablosu
+        mdl_islemlist = new DefaultTableModel();
+        Object[] col_islemlist = {"İşlem No","Kaynak","Hedef","İşlem Türü","Tutar","Kaynak Bakiye","Hedef Bakiye","Tarih"};
+        mdl_islemlist.setColumnIdentifiers(col_islemlist);
+
+        row_islem_list = new Object[col_islemlist.length];
+
+        tbl_islemtab_ozet.setModel(mdl_islemlist);
+        tbl_islemtab_ozet.getTableHeader().setReorderingAllowed(false);
 
         loadDovizModel();
         loadMaasModel();
@@ -220,11 +233,12 @@ public class managerGUI extends JFrame {
 
 
         });
-        // müşteri sayısı güncelleme denemek için
+
         sistemİlerletButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CustomerRepresentative.temsilciMusteriSayisiDuzenleyici();
+
+
             }
         });
         // gerçek müşteri ekleme
@@ -259,6 +273,30 @@ public class managerGUI extends JFrame {
 
 
             }
+        });
+        btn_islem_listele.addActionListener(e -> {
+            DefaultTableModel clearModel = (DefaultTableModel) tbl_islemtab_ozet.getModel();
+            clearModel.setRowCount(0);
+            if (Helper.isFieldEmpty(fld_islem_listele)) {
+                Helper.showMessage("fill");
+            }
+            else{
+                int islem_sayisi = Integer.parseInt(fld_islem_listele.getText());
+                for (Transaction obj : Transaction.getTransactionList(islem_sayisi)) {
+
+
+                    row_islem_list[0] = obj.getIslem_no();
+                    row_islem_list[1] = obj.getKaynak();
+                    row_islem_list[2] = obj.getHedef();
+                    row_islem_list[3] = obj.getIslem_turu();
+                    row_islem_list[4] = obj.getTutar();
+                    row_islem_list[5] = obj.getKaynak_bakiye();
+                    row_islem_list[6] = obj.getHedef_bakiye();
+                    row_islem_list[7] = obj.getTarih();
+                    mdl_islemlist.addRow(row_islem_list);
+                }
+            }
+
         });
     }
 

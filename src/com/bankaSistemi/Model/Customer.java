@@ -60,10 +60,7 @@ public class Customer extends User {
     }*/
 
 
-    public static String temsilciBulucu() {
-        String query = "aa";
-        return query;
-    }
+
 
     public static boolean customerAdd(String ad_soyad,String telefon,String tc_no,String adres,String e_posta,String temsilci_tc_no,String sifre)
     {
@@ -83,4 +80,125 @@ public class Customer extends User {
         }
         return true;
     }
+    public static ArrayList<Customer> getCustomerList(String tc) {
+        ArrayList<Customer> customerList = new ArrayList<>();
+        String query = "SELECT * FROM  müşteri_bilgiler_tablosu WHERE temsilci_tc_no = (?)";
+        Customer obj;
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,tc);
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                obj = new Customer();
+                obj.setFullName(rs.getString("ad_soyad"));
+                obj.setTelNo(rs.getString("telefon"));
+                obj.setTcNo(rs.getString("tc_no"));
+                obj.setAdress(rs.getString("adres"));
+                obj.setEmail(rs.getString("e_posta"));
+                obj.setTemsilci_tc_no(rs.getString("temsilci_tc_no"));
+                obj.setSifre(rs.getString("sifre"));
+                customerList.add(obj);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customerList;
+    }
+
+    public static ArrayList<Customer> getCustomerList2(String tc) {
+        ArrayList<Customer> customerList = new ArrayList<>();
+        String query = "SELECT * FROM  müşteri_bilgiler_tablosu WHERE tc_no = (?)";
+        Customer obj;
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,tc);
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                obj = new Customer();
+                obj.setFullName(rs.getString("ad_soyad"));
+                obj.setTelNo(rs.getString("telefon"));
+                obj.setTcNo(rs.getString("tc_no"));
+                obj.setAdress(rs.getString("adres"));
+                obj.setEmail(rs.getString("e_posta"));
+                obj.setTemsilci_tc_no(rs.getString("temsilci_tc_no"));
+                obj.setSifre(rs.getString("sifre"));
+                customerList.add(obj);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customerList;
+    }
+    public static ArrayList<Account> getHesapList(String tc) {
+        ArrayList<Account> hesapList = new ArrayList<>();
+        String query = "SELECT * FROM  hesap_tablosu WHERE tc_no = (?)";
+        Account obj;
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,tc);
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                obj = new Account();
+                obj.setHesap_no(rs.getInt("hesap_no"));
+                obj.setDoviz_turu(rs.getString("doviz_turu"));
+                obj.setBakiye(rs.getInt("bakiye"));
+                obj.setTc_no(rs.getString("tc_no"));
+
+                hesapList.add(obj);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return hesapList;
+    }
+
+    public static boolean customerUpdate(String ad_soyad,String telefon,String tc,String adres,String e_posta,String sifre)
+    {
+        String query = "UPDATE müşteri_bilgiler_tablosu SET ad_soyad = (?),telefon = (?),adres = (?),e_posta = (?),sifre = (?) WHERE tc_no = (?) ";
+
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,ad_soyad);
+            pr.setString(2,telefon);
+            pr.setString(3,adres);
+            pr.setString(4,e_posta);
+            pr.setString(5,sifre);
+            pr.setString(6,tc);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    public static boolean getFetchbyCustomer(String tc,String sifre)
+    {
+        Customer obj = null;
+        String query = "SELECT tc_no,sifre FROM müşteri_bilgiler_tablosu  WHERE tc_no = (?) AND sifre = (?)";
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,tc);
+            pr.setString(2,sifre);
+            ResultSet rs = pr.executeQuery();
+            if(rs.next()){
+                obj = new Customer();
+                obj.setTcNo(rs.getString("tc_no"));
+                obj.setSifre(rs.getString("sifre"));
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(obj==null){
+            Helper.showMessage("error");
+            return false;
+        }
+        else {
+            return true;
+        }
+
+
+    }
+
+
 }

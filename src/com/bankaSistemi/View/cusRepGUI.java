@@ -2,10 +2,11 @@ package com.bankaSistemi.View;
 
 import com.bankaSistemi.Helper.Config;
 import com.bankaSistemi.Helper.Helper;
+import com.bankaSistemi.Model.Customer;
 import com.bankaSistemi.Model.CustomerRepresentative;
-import com.bankaSistemi.Model.User;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,17 +19,48 @@ public class cusRepGUI extends JFrame {
     private JLabel lbl_welcome;
     private JPanel pnl_top;
     private JButton btn_logout;
-    private JPanel pnl_userList;
-    private JScrollPane scrl_userlist;
-    private JTable tbl_userlist;
+    private JTable tbl_musteri_ekle;
+    private JPanel pnl_cus;
+    private JButton btn_customer_add;
+    private JTextField fld_customer_name;
+    private JTextField fld_customer_telno;
+    private JTextField fld_customer_tcno;
+    private JTextField fld_customer_adress;
+    private JTextField fld_customer_password;
+    private JLabel lbl_musteri_tel;
+    private JLabel lbl_musteri_tc;
+    private JLabel lbl_musteri_adres;
+    private JLabel lbl_musteri_sifre;
+    private JLabel lbl_musteri_ad;
+    private JTextField fld_customer_eposta;
+    private JLabel lbl_customer_eposta;
+    private JPanel pnl_musterilerim;
+    private JScrollPane scrl_musterilerim;
+    private JTable tbl_musterilerim;
+    private JTable tbl_hesap_talep;
+    private JPanel pnl_hesap_talep;
+    private JScrollPane scrl_hesap_talep;
+    private JTable tbl_kredi_talep;
+    private JPanel pnl_ozet;
+    private JPanel pnl_kredi_talep;
+    private JScrollPane scrl_kredi_talep;
+    private JPanel pnl_musteri_islemgecmisi;
+    private JTable tbl_musteri_islemgecmisi;
+    private JScrollPane scrl_musteri_islemgecmisi;
     private DefaultTableModel mdl_userlist;
+    private DefaultTableModel mdl_hesap_taleplist;
+    private DefaultTableModel mdl_kredi_taleplist;
+    private DefaultTableModel mdl_musteri_islemgecmisilist;
     private Object[] row_user_list;
+    private Object[] row_hesap_taleplist;
+    private Object[] row_kredi_taleplist;
+    private Object[] row_musteri_islemgecmisilist;
 
     public cusRepGUI(CustomerRepresentative customerRep) {
         this.customerRep = customerRep;
 
         this.add(wrapper);
-        setSize(600, 400);
+        setSize(600, 550);
         int x = Helper.screenLocationCenter("x", getSize());
         int y = Helper.screenLocationCenter("y", getSize());
         setLocation(x, y);
@@ -36,27 +68,69 @@ public class cusRepGUI extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
 
-        lbl_welcome.setText(customerRep.getFullName());
+        lbl_welcome.setText("Müşteri Temsilcisi Hoşgeldiniz");
 
-        // ModelUserList
+        // musteri tablosu
         mdl_userlist = new DefaultTableModel();
-        Object[] col_userlist = {"FullName", "TelNo", "TcNo", "Adress", "Email"};
-        mdl_userlist.setColumnIdentifiers(col_userlist);
-        Object[] firstRow = {"mahmut tuncer", "5057843214", "4403214789", "İstanbul", "mtuncer@hotmail.com"};
-        mdl_userlist.addRow(firstRow);
+        Object[] col_musterilist = {"Ad Soyad","Telefon","TcNO","Adres","E-Posta","Temsilci TcNo","Şifre"};
+        mdl_userlist.setColumnIdentifiers(col_musterilist);
 
-        /*for (User obj : User.getList()) {
-            Object[] row = new Object[col_userlist.length];
-            row[0] = obj.getFullName();
-            row[1] = obj.getTelNo();
-            row[2] = obj.getTcNo();
-            row[3] = obj.getAdress();
-            row[4] = obj.getEmail();
-            mdl_userlist.addRow(row);
-        }
-*/
-        tbl_userlist.setModel(mdl_userlist);
-        tbl_userlist.getTableHeader().setReorderingAllowed(false);
+        row_user_list = new Object[col_musterilist.length];
+
+        tbl_musterilerim.setModel(mdl_userlist);
+        tbl_musterilerim.getTableHeader().setReorderingAllowed(false);
+
+        // hesap talep tablosu
+        mdl_hesap_taleplist = new DefaultTableModel();
+        Object[] col_hesaptaleplist = {"Tc No","İstek Türü","Hesap No","Onay Durumu","İstek ID"};
+        mdl_hesap_taleplist.setColumnIdentifiers(col_hesaptaleplist);
+
+        row_hesap_taleplist = new Object[col_hesaptaleplist.length];
+
+        tbl_hesap_talep.setModel(mdl_hesap_taleplist);
+        tbl_hesap_talep.getTableHeader().setReorderingAllowed(false);
+
+        // kredi talep tablosu
+        mdl_kredi_taleplist = new DefaultTableModel();
+        Object[] col_kreditaleplist = {"Tc No","Kredi Miktarı","Kredi İşlem No","İşlem Tarihi","Onay Durumu","Kredi Oran ID"};
+        mdl_kredi_taleplist.setColumnIdentifiers(col_kreditaleplist);
+
+        row_kredi_taleplist = new Object[col_kreditaleplist.length];
+
+        tbl_kredi_talep.setModel(mdl_kredi_taleplist);
+        tbl_kredi_talep.getTableHeader().setReorderingAllowed(false);
+
+        // musteri islem gecmisi tablosu
+        mdl_musteri_islemgecmisilist = new DefaultTableModel();
+        Object[] col_cusislemgecmislist = {"İşlem No","Kaynak","Hedef","İşlem Türü","Tutar","Kaynak Bakiye","Hedef Bakiye","Tarih"};
+        mdl_musteri_islemgecmisilist.setColumnIdentifiers(col_cusislemgecmislist);
+
+        row_musteri_islemgecmisilist = new Object[col_cusislemgecmislist.length];
+
+        tbl_musteri_islemgecmisi.setModel(mdl_musteri_islemgecmisilist);
+        tbl_musteri_islemgecmisi.getTableHeader().setReorderingAllowed(false);
+
+        loadCustomerModel();
+
+        // secerek musteri guncelleme
+          tbl_musterilerim.getModel().addTableModelListener(e -> {
+            if (e.getType()==TableModelEvent.UPDATE){
+                String ad_soyad = tbl_musterilerim.getValueAt(tbl_musterilerim.getSelectedRow(),0).toString();
+                String telefon = tbl_musterilerim.getValueAt(tbl_musterilerim.getSelectedRow(),1).toString();
+                String musteri_tc = tbl_musterilerim.getValueAt(tbl_musterilerim.getSelectedRow(),2).toString();
+                String adres = tbl_musterilerim.getValueAt(tbl_musterilerim.getSelectedRow(),3).toString();
+                String e_posta = tbl_musterilerim.getValueAt(tbl_musterilerim.getSelectedRow(),4).toString();
+                String sifre = tbl_musterilerim.getValueAt(tbl_musterilerim.getSelectedRow(),6).toString();
+                if (Customer.customerUpdate(ad_soyad,telefon,musteri_tc,adres,e_posta,sifre)){
+                    Helper.showMessage("done");
+                    loadCustomerModel();
+                }
+                else{
+                    Helper.showMessage("error");
+                }
+
+            }
+        });
 
         btn_logout.addActionListener(new ActionListener() {
             @Override
@@ -65,6 +139,56 @@ public class cusRepGUI extends JFrame {
                 bankaGUI bankGUI = new bankaGUI();
             }
         });
+        btn_customer_add.addActionListener(e -> {
+            if (Helper.isFieldEmpty(fld_customer_name) || Helper.isFieldEmpty(fld_customer_adress) || Helper.isFieldEmpty(fld_customer_tcno) || Helper.isFieldEmpty(fld_customer_telno) || Helper.isFieldEmpty(fld_customer_eposta) || Helper.isFieldEmpty(fld_customer_password)) {
+                Helper.showMessage("fill");
+            } else {
+                CustomerRepresentative.temsilciMusteriSayisiDuzenleyici();
+
+                String temsilci_tc;
+
+                temsilci_tc = CustomerRepresentative.enAzMusteriliTemsilciBul();
+
+                String ad_soyad = fld_customer_name.getText();
+                String telefon = fld_customer_telno.getText();
+                String tc = fld_customer_tcno.getText();
+                String adres = fld_customer_adress.getText();
+                String e_posta = fld_customer_eposta.getText();
+                String sifre = fld_customer_password.getText();
+
+                if (Customer.customerAdd(ad_soyad, telefon, tc, adres, e_posta, temsilci_tc, sifre)) {
+                    Helper.showMessage("done");
+                    CustomerRepresentative.temsilciMusteriSayisiDuzenleyici();
+
+                    fld_customer_name.setText(null);
+                    fld_customer_telno.setText(null);
+                    fld_customer_tcno.setText(null);
+                    fld_customer_eposta.setText(null);
+                    fld_customer_password.setText(null);
+                    fld_customer_adress.setText(null);
+                } else {
+                    Helper.showMessage("error");
+                }
+            }
+        });
+    }
+
+    public void loadCustomerModel() {
+        DefaultTableModel clearModel = (DefaultTableModel) tbl_musterilerim.getModel();
+        clearModel.setRowCount(0);
+        String tc = customerRep.getTcNo();
+        for (Customer obj : Customer.getCustomerList(tc)) {
+
+
+            row_user_list[0] = obj.getFullName();
+            row_user_list[1] = obj.getTelNo();
+            row_user_list[2] = obj.getTcNo();
+            row_user_list[3] = obj.getAdress();
+            row_user_list[4] = obj.getEmail();
+            row_user_list[5] = obj.getTemsilci_tc_no();
+            row_user_list[6] = obj.getSifre();
+            mdl_userlist.addRow(row_user_list);
+        }
     }
 
     public static void main(String[] args) {

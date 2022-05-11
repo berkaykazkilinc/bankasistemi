@@ -33,16 +33,25 @@ public class bankaGUI extends JFrame {
         btn_login.addActionListener(e -> {
             Customer user1 = new Customer();
             CustomerRepresentative user2 = new CustomerRepresentative();
-            user1.setFullName("Tefo");
-            user2.setFullName("Şebnem");
+
             if (fld_username.getText().isEmpty() || fld_password.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Lutfen Tum Alanlari Doldurun!", "Hata", JOptionPane.INFORMATION_MESSAGE);
             } else if (radiobut_customer.isSelected()) {
-                customerGUI cusGUI = new customerGUI(user1);
-                dispose();
+                user1.setTcNo(fld_username.getText());
+                user1.setSifre(fld_password.getText());
+                if (Customer.getFetchbyCustomer(user1.getTcNo(),user1.getSifre())) {
+                    customerGUI cusGUI = new customerGUI(user1);
+                    dispose();
+                }
+
             } else if (radiobut_cusRep.isSelected()) {
-                cusRepGUI crepGUI = new cusRepGUI(user2);
-                dispose();
+                user2.setTcNo(fld_username.getText());
+                user2.setSifre(fld_password.getText());
+                if (CustomerRepresentative.getFetchbyCusRep(user2.getTcNo(),user2.getSifre())) {
+                    cusRepGUI crepGUI = new cusRepGUI(user2);
+                    dispose();
+                }
+
             } else if (radiobut_manager.isSelected()) {
                 String tc = fld_username.getText();
                 String sifre = fld_password.getText();
