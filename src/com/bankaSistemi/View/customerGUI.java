@@ -2,14 +2,11 @@ package com.bankaSistemi.View;
 
 import com.bankaSistemi.Helper.*;
 import com.bankaSistemi.Model.Account;
-import com.bankaSistemi.Model.Currency;
 import com.bankaSistemi.Model.Customer;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class customerGUI extends JFrame {
 
@@ -38,6 +35,8 @@ public class customerGUI extends JFrame {
     private JLabel lbl_hesapsil;
     private JLabel lbl_dovizTur;
     private JLabel lbl_hedefhesap;
+    private JTextField fld_miktar;
+    private JLabel lbl_miktar;
     private DefaultTableModel mdl_userlist;
     private Object[] row_user_list;
     private DefaultTableModel mdl_hesaplist;
@@ -137,6 +136,16 @@ public class customerGUI extends JFrame {
         btn_paratransferi.addActionListener(e -> {
                    int kaynak_hesap;
                    int hedef_hesap;
+                   float miktar;
+                   kaynak_hesap = Integer.parseInt(fld_kaynakhesap.getText());
+                   hedef_hesap = Integer.parseInt(fld_hedefhesap.getText());
+                   miktar = Float.parseFloat(fld_miktar.getText());
+                   if(Account.paraTransferi(kaynak_hesap,hedef_hesap,miktar))
+                   {
+                       Helper.showMessage("done");
+                       loadHesaplarModel();
+                   }
+
         });
     }
     public void loadCustomerBilgilerModel() {

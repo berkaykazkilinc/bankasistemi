@@ -4,6 +4,7 @@ import com.bankaSistemi.Helper.Config;
 import com.bankaSistemi.Helper.Helper;
 import com.bankaSistemi.Model.Customer;
 import com.bankaSistemi.Model.CustomerRepresentative;
+import com.bankaSistemi.Model.Talep;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -47,6 +48,10 @@ public class cusRepGUI extends JFrame {
     private JPanel pnl_musteri_islemgecmisi;
     private JTable tbl_musteri_islemgecmisi;
     private JScrollPane scrl_musteri_islemgecmisi;
+    private JButton btn_reddet;
+    private JButton btn_onayla;
+    private JTextField fld_islemid;
+    private JLabel lbl_onay_islemid;
     private DefaultTableModel mdl_userlist;
     private DefaultTableModel mdl_hesap_taleplist;
     private DefaultTableModel mdl_kredi_taleplist;
@@ -82,7 +87,7 @@ public class cusRepGUI extends JFrame {
 
         // hesap talep tablosu
         mdl_hesap_taleplist = new DefaultTableModel();
-        Object[] col_hesaptaleplist = {"Tc No","İstek Türü","Hesap No","Onay Durumu","İstek ID"};
+        Object[] col_hesaptaleplist = {"İstek ID","Hesap No","TC No","İstek Türü","Döviz Türü","Onay Durumu"};
         mdl_hesap_taleplist.setColumnIdentifiers(col_hesaptaleplist);
 
         row_hesap_taleplist = new Object[col_hesaptaleplist.length];
@@ -111,6 +116,7 @@ public class cusRepGUI extends JFrame {
         tbl_musteri_islemgecmisi.getTableHeader().setReorderingAllowed(false);
 
         loadCustomerModel();
+        loadHesapTalepModel();
 
         // secerek musteri guncelleme
           tbl_musterilerim.getModel().addTableModelListener(e -> {
@@ -171,6 +177,29 @@ public class cusRepGUI extends JFrame {
                 }
             }
         });
+
+        tbl_hesap_talep.getSelectionModel().addListSelectionListener(e -> {
+
+            try{
+                String select_islem_id = tbl_hesap_talep.getValueAt(tbl_hesap_talep.getSelectedRow(),0).toString();
+                //System.out.println(select_islem_id);
+                fld_islemid.setText(select_islem_id);
+            }
+            catch (Exception exception){
+
+            }
+
+        });
+        btn_reddet.addActionListener(e -> {
+            int islem_id = Integer.parseInt(fld_islemid.getText());
+            Talep.talepDelete(islem_id);
+            loadHesapTalepModel();
+        });
+
+        btn_onayla.addActionListener(e -> {
+            int islem_id = Integer.parseInt(fld_islemid.getText());
+
+        });
     }
 
     public void loadCustomerModel() {
@@ -188,6 +217,23 @@ public class cusRepGUI extends JFrame {
             row_user_list[5] = obj.getTemsilci_tc_no();
             row_user_list[6] = obj.getSifre();
             mdl_userlist.addRow(row_user_list);
+        }
+    }
+
+    public void loadHesapTalepModel() {
+        DefaultTableModel clearModel = (DefaultTableModel) tbl_hesap_talep.getModel();
+        clearModel.setRowCount(0);
+        String tc = customerRep.getTcNo();
+        for (Talep obj : Talep.getHesapTalepList(tc)) {
+
+
+            row_hesap_taleplist[0] = obj.getIstek_id();
+            row_hesap_taleplist[1] = obj.getHesap_no();
+            row_hesap_taleplist[2] = obj.getTc_no();
+            row_hesap_taleplist[3] = obj.getIstek_turu();
+            row_hesap_taleplist[4] = obj.getDoviz_turu();
+            row_hesap_taleplist[5] = obj.getOnay_durumu();
+            mdl_hesap_taleplist.addRow(row_hesap_taleplist);
         }
     }
 

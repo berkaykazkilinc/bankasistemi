@@ -141,7 +141,7 @@ public class Customer extends User {
                 obj = new Account();
                 obj.setHesap_no(rs.getInt("hesap_no"));
                 obj.setDoviz_turu(rs.getString("doviz_turu"));
-                obj.setBakiye(rs.getInt("bakiye"));
+                obj.setBakiye(rs.getFloat("bakiye"));
                 obj.setTc_no(rs.getString("tc_no"));
 
                 hesapList.add(obj);
