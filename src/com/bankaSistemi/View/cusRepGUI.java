@@ -76,7 +76,16 @@ public class cusRepGUI extends JFrame {
         lbl_welcome.setText("Müşteri Temsilcisi Hoşgeldiniz");
 
         // musteri tablosu
-        mdl_userlist = new DefaultTableModel();
+        mdl_userlist = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 5 || column == 2)
+                {
+                    return false;
+                }
+                return super.isCellEditable(row, column);
+            }
+        };
         Object[] col_musterilist = {"Ad Soyad","Telefon","TcNO","Adres","E-Posta","Temsilci TcNo","Şifre"};
         mdl_userlist.setColumnIdentifiers(col_musterilist);
 

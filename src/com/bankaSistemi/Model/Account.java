@@ -243,6 +243,20 @@ public class Account {
                             PreparedStatement pr3 = DBConnector.getInstance().prepareStatement(query3);
                             pr3.setFloat(1,(tutar+hedef_hesap.getBakiye()));
                             pr3.setInt(2,hedef_hesap_no);
+
+                            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                            LocalDate now = LocalDate.now();
+
+                            PreparedStatement pr7 = DBConnector.getInstance().prepareStatement(query7);
+                            pr7.setInt(1,(kaynak_hesap_no));
+                            pr7.setInt(2,hedef_hesap_no);
+                            pr7.setString(3,"Para Transferi");
+                            pr7.setFloat(4,tutar);
+                            pr7.setFloat(5,kaynak_hesap.bakiye-tutar);
+                            pr7.setFloat(6,tutar+hedef_hesap.getBakiye());
+                            pr7.setDate(7, java.sql.Date.valueOf(now));
+
+                            pr7.executeUpdate();
                             return pr3.executeUpdate() != -1;
                         }
                         catch (SQLException e){
@@ -262,6 +276,149 @@ public class Account {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return true;
+    }
+    public static boolean hesapSeninMi(String tc_no,int hesap_no){
+
+        String query = "SELECT tc_no FROM hesap_tablosu WHERE hesap_no = ?";
+        String tc_kontrol = null;
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setInt(1,hesap_no);
+            ResultSet rs = pr.executeQuery();
+            rs.next();
+            tc_kontrol=(rs.getString("tc_no"));
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        if(tc_no.equals(tc_kontrol))
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+
+
+    }
+    public static boolean paraYatırma(float tutar,int hesap_no,Customer customer){
+
+        String query = "UPDATE hesap_tablosu SET bakiye = ? WHERE hesap_no = ?";
+        String query2= "SELECT hesap_no,bakiye FROM hesap_tablosu WHERE hesap_no = ?";//hedef bakiye bul
+        String query7 = "INSERT INTO islem_tablosu (kaynak,hedef,islem_turu,tutar,hedef_bakiye,tarih) VALUES (?,?,?,?,?,?)";
+
+        Account hedef_hesap = new Account();
+        Account findCurrency = Account.getFetchbyHesapNo(hesap_no);
+        if(findCurrency == null){
+            Helper.showMessage("Bu hesap mevcut değil !");
+            return false;
+        }
+        else{
+            if (hesapSeninMi(customer.getTcNo(), hesap_no)){
+                try {
+                    PreparedStatement pr2 = DBConnector.getInstance().prepareStatement(query2);
+                    pr2.setInt(1,hesap_no);
+                    ResultSet rs2 = pr2.executeQuery();
+                    rs2.next();
+                    hedef_hesap.setBakiye(rs2.getFloat("bakiye"));
+                }
+                catch (SQLException e){
+                    e.printStackTrace();
+                }
+                try {
+                    PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+                    pr.setFloat(1,tutar+hedef_hesap.getBakiye());
+                    pr.setInt(2,hesap_no);
+
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                    LocalDate now = LocalDate.now();
+
+
+                    PreparedStatement pr7 = DBConnector.getInstance().prepareStatement(query7);
+                    pr7.setString(1,(customer.getTcNo()));
+                    pr7.setInt(2,hesap_no);
+                    pr7.setString(3,"Para Yatırma");
+                    pr7.setFloat(4,tutar);
+                    pr7.setFloat(5,tutar+hedef_hesap.getBakiye());
+                    pr7.setDate(6, java.sql.Date.valueOf(now));
+
+                    pr7.executeUpdate();
+
+                    return pr.executeUpdate() != -1;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            else{
+                Helper.showMessage("Bu hesap senin değil !");
+                return false;
+            }
+
+        }
+
+
+        return true;
+    }
+    public static boolean paraCekme(float tutar,int hesap_no,Customer customer){
+
+        String query = "UPDATE hesap_tablosu SET bakiye = ? WHERE hesap_no = ?"; // bakiye guncelle
+        String query2= "SELECT hesap_no,bakiye FROM hesap_tablosu WHERE hesap_no = ?";//kaynak bakiye bul
+        String query7 = "INSERT INTO islem_tablosu (kaynak,hedef,islem_turu,tutar,kaynak_bakiye,tarih) VALUES (?,?,?,?,?,?)"; // ıslem tablosuna ekle
+        Account kaynak_hesap = new Account();
+        Account findCurrency = Account.getFetchbyHesapNo(hesap_no);
+        if(findCurrency == null){
+            Helper.showMessage("Bu hesap mevcut değil !");
+            return false;
+        }
+        else {
+            if (hesapSeninMi(customer.getTcNo(), hesap_no)){
+                try {
+                    PreparedStatement pr2 = DBConnector.getInstance().prepareStatement(query2);
+                    pr2.setInt(1,hesap_no);
+                    ResultSet rs2 = pr2.executeQuery();
+                    rs2.next();
+                    kaynak_hesap.setBakiye(rs2.getFloat("bakiye"));
+                    if(tutar>(kaynak_hesap.getBakiye())){
+                        Helper.showMessage("Bakiyeniz Yeterli Değil !");
+                        return false;
+                    }
+                }
+                catch (SQLException e){
+                    e.printStackTrace();
+                }
+                try {
+                    PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+                    pr.setFloat(1,kaynak_hesap.bakiye-tutar);
+                    pr.setInt(2,hesap_no);
+
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                    LocalDate now = LocalDate.now();
+
+
+                    PreparedStatement pr7 = DBConnector.getInstance().prepareStatement(query7);
+                    pr7.setInt(1,hesap_no);
+                    pr7.setString(2,(customer.getTcNo()));
+                    pr7.setString(3,"Para Çekme");
+                    pr7.setFloat(4,tutar);
+                    pr7.setFloat(5,kaynak_hesap.bakiye-tutar);
+                    pr7.setDate(6, java.sql.Date.valueOf(now));
+
+                    pr7.executeUpdate();
+
+                    return pr.executeUpdate() != -1;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                Helper.showMessage("Bu hesap senin değil !");
+                return false;
+            }
+        }
+
+
+
         return true;
     }
 

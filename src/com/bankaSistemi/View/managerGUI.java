@@ -262,7 +262,10 @@ public class managerGUI extends JFrame {
                 if (Customer.customerAdd(ad_soyad, telefon, tc, adres, e_posta, temsilci_tc, sifre)) {
                     Helper.showMessage("done");
                     CustomerRepresentative.temsilciMusteriSayisiDuzenleyici();
-
+                    fld_customer_name.setText(null);
+                    fld_customer_telno.setText(null);
+                    fld_customer_tcno.setText(null);
+                    fld_customer_eposta.setText(null);
                     fld_customer_password.setText(null);
                     fld_customer_adress.setText(null);
                 } else {

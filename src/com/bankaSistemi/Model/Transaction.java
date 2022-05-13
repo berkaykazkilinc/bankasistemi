@@ -13,8 +13,8 @@ import java.sql.Statement;
 
 public class Transaction {
     int islem_no;
-    int kaynak;
-    int hedef;
+    String kaynak;
+    String hedef;
     String islem_turu;
     int tutar;
     int kaynak_bakiye;
@@ -29,19 +29,19 @@ public class Transaction {
         this.islem_no = islem_no;
     }
 
-    public int getKaynak() {
+    public String getKaynak() {
         return kaynak;
     }
 
-    public void setKaynak(int kaynak) {
+    public void setKaynak(String kaynak) {
         this.kaynak = kaynak;
     }
 
-    public int getHedef() {
+    public String getHedef() {
         return hedef;
     }
 
-    public void setHedef(int hedef) {
+    public void setHedef(String hedef) {
         this.hedef = hedef;
     }
 
@@ -97,8 +97,8 @@ public class Transaction {
             {
                 obj = new Transaction();
                 obj.setIslem_no(rs.getInt("islem_no"));
-                obj.setKaynak(rs.getInt("kaynak"));
-                obj.setHedef(rs.getInt("hedef"));
+                obj.setKaynak(rs.getString("kaynak"));
+                obj.setHedef(rs.getString("hedef"));
                 obj.setIslem_turu(rs.getString("islem_turu"));
                 obj.setTutar(rs.getInt("tutar"));
                 obj.setKaynak_bakiye(rs.getInt("kaynak_bakiye"));

@@ -7,6 +7,8 @@ import com.bankaSistemi.Model.Customer;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class customerGUI extends JFrame {
 
@@ -37,6 +39,16 @@ public class customerGUI extends JFrame {
     private JLabel lbl_hedefhesap;
     private JTextField fld_miktar;
     private JLabel lbl_miktar;
+    private JTextField fld_yatırılacak_tutar;
+    private JButton btn_paraYatır;
+    private JTextField fld_yatırılacak_hesapNo;
+    private JTextField fld_cekilecek_tutar;
+    private JTextField fld_cekilecek_hesapNo;
+    private JButton btn_paraCek;
+    private JLabel lbl_yatırılacak_tutar;
+    private JLabel lbl_yatırılacak_hesapNo;
+    private JLabel lbl_para_cek;
+    private JLabel lbl_cekilecek_hesapNo;
     private DefaultTableModel mdl_userlist;
     private Object[] row_user_list;
     private DefaultTableModel mdl_hesaplist;
@@ -58,7 +70,15 @@ public class customerGUI extends JFrame {
         lbl_welcome.setText("Müşteri Hoşgeldiniz");
 
         // ModelUserList
-        mdl_userlist = new DefaultTableModel();
+        mdl_userlist = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 2 || column == 5){
+                    return false;
+                }
+                return super.isCellEditable(row, column);
+            }
+        };
         Object[] col_userlist = {"Ad Soyad", "Telefon", "TC No", "Adres", "E-Posta", "Temsilci TC No", "Şifre"};
         mdl_userlist.setColumnIdentifiers(col_userlist);
         row_user_list = new Object[col_userlist.length];
@@ -87,7 +107,7 @@ public class customerGUI extends JFrame {
                 String sifre = tbl_bilgiler.getValueAt(tbl_bilgiler.getSelectedRow(), 6).toString();
                 if (Customer.customerUpdate(ad_soyad, telefon, tc_no, adres, e_posta, sifre)) {
                     Helper.showMessage("done");
-                    //  loadCustomerModel();
+                    loadCustomerBilgilerModel();
                 } else {
                     Helper.showMessage("error");
                 }
@@ -105,7 +125,7 @@ public class customerGUI extends JFrame {
                 Helper.showMessage("fill");
             } else {
                 String doviz_tur = fld_hesAc_doviztur.getText();
-                if (Account.accountAdd(doviz_tur,customer)) {
+                if (Account.accountAdd(doviz_tur, customer)) {
                     Helper.showMessage("done");
                     loadHesaplarModel();
 
@@ -120,8 +140,7 @@ public class customerGUI extends JFrame {
         btn_hesapSil.addActionListener(e -> {
             if (Helper.isFieldEmpty(fld_hesapSil_hesapNo)) {
                 Helper.showMessage("fill");
-            }
-            else {
+            } else {
                 int hesap_no = Integer.parseInt(fld_hesapSil_hesapNo.getText());
                 if (Account.accountDelete(hesap_no)) {
                     Helper.showMessage("done");
@@ -134,20 +153,79 @@ public class customerGUI extends JFrame {
             }
         });
         btn_paratransferi.addActionListener(e -> {
-                   int kaynak_hesap;
-                   int hedef_hesap;
-                   float miktar;
-                   kaynak_hesap = Integer.parseInt(fld_kaynakhesap.getText());
-                   hedef_hesap = Integer.parseInt(fld_hedefhesap.getText());
-                   miktar = Float.parseFloat(fld_miktar.getText());
-                   if(Account.paraTransferi(kaynak_hesap,hedef_hesap,miktar))
-                   {
-                       Helper.showMessage("done");
-                       loadHesaplarModel();
-                   }
+            int kaynak_hesap;
+            int hedef_hesap;
+            float miktar;
+            if (Helper.isFieldEmpty(fld_yatırılacak_tutar)||Helper.isFieldEmpty(fld_yatırılacak_hesapNo)) {
+                Helper.showMessage("fill");
+            }
+            else{
+                kaynak_hesap = Integer.parseInt(fld_kaynakhesap.getText());
+                hedef_hesap = Integer.parseInt(fld_hedefhesap.getText());
+                miktar = Float.parseFloat(fld_miktar.getText());
+                if (Account.paraTransferi(kaynak_hesap, hedef_hesap, miktar)) {
+                    Helper.showMessage("done");
+                    loadHesaplarModel();
+
+                    fld_kaynakhesap.setText(null);
+                    fld_hedefhesap.setText(null);
+                    fld_miktar.setText(null);
+
+                }
+                else {
+                    Helper.showMessage("error");
+                }
+            }
+
 
         });
+        btn_paraYatır.addActionListener(e -> {
+            float tutar;
+            int hesap_no;
+            if (Helper.isFieldEmpty(fld_yatırılacak_tutar)||Helper.isFieldEmpty(fld_yatırılacak_hesapNo)) {
+                Helper.showMessage("fill");
+            }
+           else{
+                tutar = Float.parseFloat(fld_yatırılacak_tutar.getText());
+                hesap_no = Integer.parseInt(fld_yatırılacak_hesapNo.getText());
+                if (Account.paraYatırma(tutar, hesap_no, customer)) {
+                    Helper.showMessage("done");
+                    loadHesaplarModel();
+
+                    fld_yatırılacak_tutar.setText(null);
+                    fld_yatırılacak_hesapNo.setText(null);
+                }
+                else {
+                   // Helper.showMessage("error");
+                }
+            }
+
+
+        });
+        btn_paraCek.addActionListener(e -> {
+            float tutar;
+            int hesap_no;
+            if (Helper.isFieldEmpty(fld_cekilecek_tutar)||Helper.isFieldEmpty(fld_cekilecek_hesapNo)) {
+                Helper.showMessage("fill");
+            }
+            else{
+                tutar = Float.parseFloat(fld_cekilecek_tutar.getText());
+                hesap_no = Integer.parseInt(fld_cekilecek_hesapNo.getText());
+                if (Account.paraCekme(tutar, hesap_no, customer)) {
+                    Helper.showMessage("done");
+                    loadHesaplarModel();
+
+                    fld_cekilecek_tutar.setText(null);
+                    fld_cekilecek_hesapNo.setText(null);
+
+                }
+                else {
+                    //Helper.showMessage("error");
+                }
+            }
+        });
     }
+
     public void loadCustomerBilgilerModel() {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_bilgiler.getModel();
         clearModel.setRowCount(0);
@@ -165,6 +243,7 @@ public class customerGUI extends JFrame {
             mdl_userlist.addRow(row_user_list);
         }
     }
+
     public void loadHesaplarModel() {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_hesaplar.getModel();
         clearModel.setRowCount(0);
