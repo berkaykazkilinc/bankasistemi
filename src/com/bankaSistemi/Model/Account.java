@@ -6,6 +6,12 @@ import com.bankaSistemi.Helper.Helper;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class Account {
 
@@ -77,14 +83,13 @@ public class Account {
     }
     public static boolean accountAdd(String doviz_turu,Customer customer)
     {
-        String query = "INSERT INTO hesap_tablosu (doviz_turu,bakiye,tc_no,sifre,kullanici_turu) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO hesap_tablosu (doviz_turu,bakiye,tc_no,kullanici_turu) VALUES (?,?,?,?)";
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
             pr.setString(1,doviz_turu);
             pr.setInt(2,0);
             pr.setString(3,customer.getTcNo());
-            pr.setString(4, customer.getSifre());
-            pr.setString(5,"Müşteri");
+            pr.setString(4,"Müşteri");
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -166,6 +171,7 @@ public class Account {
         String query4 = "UPDATE hesap_tablosu SET bakiye = ? WHERE hesap_no = ?";
         String query5 = "SELECT kur_orani FROM doviz_tablosu WHERE doviz_turu = ?"; // kaynak kur orani
         String query6 = "SELECT kur_orani FROM doviz_tablosu WHERE doviz_turu = ?"; // hedef kur orani
+        String query7 = "INSERT INTO islem_tablosu (kaynak,hedef,islem_turu,tutar,kaynak_bakiye,hedef_bakiye,tarih) VALUES (?,?,?,?,?,?,?)";
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
             pr.setInt(1,kaynak_hesap_no);
@@ -194,6 +200,22 @@ public class Account {
                         pr4.setFloat(1,(kaynak_hesap.bakiye-tutar));
                         pr4.setInt(2,kaynak_hesap_no);
                         pr4.executeUpdate();
+
+                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                        LocalDate now = LocalDate.now();
+
+
+                        PreparedStatement pr7 = DBConnector.getInstance().prepareStatement(query7);
+                        pr7.setInt(1,(kaynak_hesap_no));
+                        pr7.setInt(2,hedef_hesap_no);
+                        pr7.setString(3,"Para Transferi");
+                        pr7.setFloat(4,tutar);
+                        pr7.setFloat(5,kaynak_hesap.bakiye-tutar);
+                        pr7.setFloat(6,tutar+hedef_hesap.getBakiye());
+                        pr7.setDate(7, java.sql.Date.valueOf(now));
+
+                        pr7.executeUpdate();
+
                         return pr3.executeUpdate() != -1;
 
 
