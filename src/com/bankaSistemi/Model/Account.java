@@ -306,7 +306,7 @@ public class Account {
 
         String query = "UPDATE hesap_tablosu SET bakiye = ? WHERE hesap_no = ?";
         String query2= "SELECT hesap_no,bakiye FROM hesap_tablosu WHERE hesap_no = ?";//hedef bakiye bul
-        String query7 = "INSERT INTO islem_tablosu (kaynak,hedef,islem_turu,tutar,hedef_bakiye,tarih) VALUES (?,?,?,?,?,?)";
+        String query7 = "INSERT INTO islem_tablosu (hedef,islem_turu,tutar,hedef_bakiye,tarih) VALUES (?,?,?,?,?)";
 
         Account hedef_hesap = new Account();
         Account findCurrency = Account.getFetchbyHesapNo(hesap_no);
@@ -336,12 +336,12 @@ public class Account {
 
 
                     PreparedStatement pr7 = DBConnector.getInstance().prepareStatement(query7);
-                    pr7.setString(1,(customer.getTcNo()));
-                    pr7.setInt(2,hesap_no);
-                    pr7.setString(3,"Para Yatırma");
-                    pr7.setFloat(4,tutar);
-                    pr7.setFloat(5,tutar+hedef_hesap.getBakiye());
-                    pr7.setDate(6, java.sql.Date.valueOf(now));
+                  //  pr7.setInt(1,null);
+                    pr7.setInt(1,hesap_no);
+                    pr7.setString(2,"Para Yatırma");
+                    pr7.setFloat(3,tutar);
+                    pr7.setFloat(4,tutar+hedef_hesap.getBakiye());
+                    pr7.setDate(5, java.sql.Date.valueOf(now));
 
                     pr7.executeUpdate();
 
@@ -364,7 +364,7 @@ public class Account {
 
         String query = "UPDATE hesap_tablosu SET bakiye = ? WHERE hesap_no = ?"; // bakiye guncelle
         String query2= "SELECT hesap_no,bakiye FROM hesap_tablosu WHERE hesap_no = ?";//kaynak bakiye bul
-        String query7 = "INSERT INTO islem_tablosu (kaynak,hedef,islem_turu,tutar,kaynak_bakiye,tarih) VALUES (?,?,?,?,?,?)"; // ıslem tablosuna ekle
+        String query7 = "INSERT INTO islem_tablosu (kaynak,islem_turu,tutar,kaynak_bakiye,tarih) VALUES (?,?,?,?,?)"; // ıslem tablosuna ekle
         Account kaynak_hesap = new Account();
         Account findCurrency = Account.getFetchbyHesapNo(hesap_no);
         if(findCurrency == null){
@@ -398,11 +398,11 @@ public class Account {
 
                     PreparedStatement pr7 = DBConnector.getInstance().prepareStatement(query7);
                     pr7.setInt(1,hesap_no);
-                    pr7.setString(2,(customer.getTcNo()));
-                    pr7.setString(3,"Para Çekme");
-                    pr7.setFloat(4,tutar);
-                    pr7.setFloat(5,kaynak_hesap.bakiye-tutar);
-                    pr7.setDate(6, java.sql.Date.valueOf(now));
+                  //  pr7.setString(2,(customer.getTcNo()));
+                    pr7.setString(2,"Para Çekme");
+                    pr7.setFloat(3,tutar);
+                    pr7.setFloat(4,kaynak_hesap.bakiye-tutar);
+                    pr7.setDate(5, java.sql.Date.valueOf(now));
 
                     pr7.executeUpdate();
 

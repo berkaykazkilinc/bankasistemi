@@ -5,12 +5,14 @@ import com.bankaSistemi.Helper.Helper;
 import com.bankaSistemi.Model.Customer;
 import com.bankaSistemi.Model.CustomerRepresentative;
 import com.bankaSistemi.Model.Talep;
+import com.bankaSistemi.Model.Transaction;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class cusRepGUI extends JFrame {
     private JPanel wrapper;
@@ -60,6 +62,7 @@ public class cusRepGUI extends JFrame {
     private Object[] row_hesap_taleplist;
     private Object[] row_kredi_taleplist;
     private Object[] row_musteri_islemgecmisilist;
+    ArrayList<String> musterilerim = new ArrayList<>();
 
     public cusRepGUI(CustomerRepresentative customerRep) {
         this.customerRep = customerRep;
@@ -126,6 +129,7 @@ public class cusRepGUI extends JFrame {
 
         loadCustomerModel();
         loadHesapTalepModel();
+        loadCustomerRepİslemGecmisi();
 
         // secerek musteri guncelleme
           tbl_musterilerim.getModel().addTableModelListener(e -> {
@@ -226,6 +230,8 @@ public class cusRepGUI extends JFrame {
             row_user_list[5] = obj.getTemsilci_tc_no();
             row_user_list[6] = obj.getSifre();
             mdl_userlist.addRow(row_user_list);
+            musterilerim.add(obj.getTcNo());
+          //  System.out.println(musterilerim);
         }
     }
 
@@ -243,7 +249,33 @@ public class cusRepGUI extends JFrame {
             row_hesap_taleplist[4] = obj.getDoviz_turu();
             row_hesap_taleplist[5] = obj.getOnay_durumu();
             mdl_hesap_taleplist.addRow(row_hesap_taleplist);
+
         }
+    }
+
+
+        public void loadCustomerRepİslemGecmisi() {
+        DefaultTableModel clearModel = (DefaultTableModel) tbl_musteri_islemgecmisi.getModel();
+        clearModel.setRowCount(0);
+       // String tc = customer.getTcNo();
+            for (int i = 0; i < musterilerim.size(); i++) {
+                String tc = musterilerim.get(i);
+                System.out.println(tc);
+                for (Transaction obj : Transaction.getMusteriİslemGecmisi(tc)) {
+
+
+                    row_musteri_islemgecmisilist[0] = obj.getIslem_no();
+                    row_musteri_islemgecmisilist[1] = obj.getKaynak();
+                    row_musteri_islemgecmisilist[2] = obj.getHedef();
+                    row_musteri_islemgecmisilist[3] = obj.getIslem_turu();
+                    row_musteri_islemgecmisilist[4] = obj.getTutar();
+                    row_musteri_islemgecmisilist[5] = obj.getKaynak_bakiye();
+                    row_musteri_islemgecmisilist[6] = obj.getHedef_bakiye();
+                    row_musteri_islemgecmisilist[7] = obj.getTarih();
+                    mdl_musteri_islemgecmisilist.addRow(row_musteri_islemgecmisilist);
+                }
+            }
+
     }
 
     public static void main(String[] args) {

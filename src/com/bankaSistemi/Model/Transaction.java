@@ -12,9 +12,9 @@ public class Transaction {
 
     int islem_no;
 
-    String kaynak;
+    int kaynak;
 
-    String hedef;
+    int hedef;
 
     String islem_turu;
 
@@ -34,19 +34,19 @@ public class Transaction {
         this.islem_no = islem_no;
     }
 
-    public String getKaynak() {
+    public int getKaynak() {
         return kaynak;
     }
 
-    public void setKaynak(String kaynak) {
+    public void setKaynak(int kaynak) {
         this.kaynak = kaynak;
     }
 
-    public String getHedef() {
+    public int getHedef() {
         return hedef;
     }
 
-    public void setHedef(String hedef) {
+    public void setHedef(int hedef) {
         this.hedef = hedef;
     }
 
@@ -101,8 +101,8 @@ public class Transaction {
             while (rs.next()) {
                 obj = new Transaction();
                 obj.setIslem_no(rs.getInt("islem_no"));
-                obj.setKaynak(rs.getString("kaynak"));
-                obj.setHedef(rs.getString("hedef"));
+                obj.setKaynak(rs.getInt("kaynak"));
+                obj.setHedef(rs.getInt("hedef"));
                 obj.setIslem_turu(rs.getString("islem_turu"));
                 obj.setTutar(rs.getInt("tutar"));
                 obj.setKaynak_bakiye(rs.getInt("kaynak_bakiye"));
@@ -116,5 +116,33 @@ public class Transaction {
         }
         return TransactionList;
     }
+
+    public static ArrayList<Transaction> getMusteriİslemGecmisi(String tc) {
+        ArrayList<Transaction> TransactionList = new ArrayList<>();
+        String query = " SELECT DISTINCT islem_tablosu.islem_no, islem_tablosu.kaynak , islem_tablosu.hedef ,islem_tablosu.islem_turu,islem_tablosu.tutar,islem_tablosu.kaynak_bakiye,islem_tablosu.hedef_bakiye,islem_tablosu.tarih FROM `islem_tablosu` INNER JOIN hesap_tablosu ON islem_tablosu.kaynak = hesap_tablosu.hesap_no OR islem_tablosu.hedef = hesap_tablosu.hesap_no WHERE hesap_tablosu.tc_no = ? ";
+        Transaction obj;
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,tc);
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                obj = new Transaction();
+                obj.setIslem_no(rs.getInt("islem_no"));
+                obj.setKaynak(rs.getInt("kaynak"));
+                obj.setHedef(rs.getInt("hedef"));
+                obj.setIslem_turu(rs.getString("islem_turu"));
+                obj.setTutar(rs.getInt("tutar"));
+                obj.setKaynak_bakiye(rs.getInt("kaynak_bakiye"));
+                obj.setHedef_bakiye(rs.getInt("hedef_bakiye"));
+                obj.setTarih(rs.getString("tarih"));
+
+                TransactionList.add(obj);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return TransactionList;
+    }
+
 
 }

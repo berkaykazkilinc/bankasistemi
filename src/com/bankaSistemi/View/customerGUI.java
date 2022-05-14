@@ -4,6 +4,7 @@ import com.bankaSistemi.Helper.*;
 import com.bankaSistemi.Model.Account;
 import com.bankaSistemi.Model.Currency;
 import com.bankaSistemi.Model.Customer;
+import com.bankaSistemi.Model.Transaction;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -108,6 +109,7 @@ public class customerGUI extends JFrame {
 
         loadCustomerBilgilerModel();
         loadHesaplarModel();
+        loadCustomerİslemGecmisi();
 
         // secerek musteri guncelleme
         tbl_bilgiler.getModel().addTableModelListener(e -> {
@@ -183,7 +185,7 @@ public class customerGUI extends JFrame {
             int kaynak_hesap;
             int hedef_hesap;
             float miktar;
-            if (Helper.isFieldEmpty(fld_yatırılacak_tutar)||Helper.isFieldEmpty(fld_yatırılacak_hesapNo)) {
+            if (Helper.isFieldEmpty(fld_kaynakhesap)||Helper.isFieldEmpty(fld_hedefhesap)) {
                 Helper.showMessage("fill");
             }
             else{
@@ -193,6 +195,7 @@ public class customerGUI extends JFrame {
                 if (Account.paraTransferi(kaynak_hesap, hedef_hesap, miktar)) {
                     Helper.showMessage("done");
                     loadHesaplarModel();
+                    loadCustomerİslemGecmisi();
 
                     fld_kaynakhesap.setText(null);
                     fld_hedefhesap.setText(null);
@@ -218,7 +221,7 @@ public class customerGUI extends JFrame {
                 if (Account.paraYatırma(tutar, hesap_no, customer)) {
                     Helper.showMessage("done");
                     loadHesaplarModel();
-
+                    loadCustomerİslemGecmisi();
                     fld_yatırılacak_tutar.setText(null);
                     fld_yatırılacak_hesapNo.setText(null);
                 }
@@ -241,6 +244,7 @@ public class customerGUI extends JFrame {
                 if (Account.paraCekme(tutar, hesap_no, customer)) {
                     Helper.showMessage("done");
                     loadHesaplarModel();
+                    loadCustomerİslemGecmisi();
 
                     fld_cekilecek_tutar.setText(null);
                     fld_cekilecek_hesapNo.setText(null);
@@ -283,6 +287,24 @@ public class customerGUI extends JFrame {
             row_hesap_list[2] = obj.getBakiye();
             row_hesap_list[3] = obj.getTc_no();
             mdl_hesaplist.addRow(row_hesap_list);
+        }
+    }
+    public void loadCustomerİslemGecmisi() {
+        DefaultTableModel clearModel = (DefaultTableModel) tbl_musteri_islemgecmisi.getModel();
+        clearModel.setRowCount(0);
+        String tc = customer.getTcNo();
+        for (Transaction obj : Transaction.getMusteriİslemGecmisi(tc)) {
+
+
+            row_musteri_islemgecmisilist[0] = obj.getIslem_no();
+            row_musteri_islemgecmisilist[1] = obj.getKaynak();
+            row_musteri_islemgecmisilist[2] = obj.getHedef();
+            row_musteri_islemgecmisilist[3] = obj.getIslem_turu();
+            row_musteri_islemgecmisilist[4] = obj.getTutar();
+            row_musteri_islemgecmisilist[5] = obj.getKaynak_bakiye();
+            row_musteri_islemgecmisilist[6] = obj.getHedef_bakiye();
+            row_musteri_islemgecmisilist[7] = obj.getTarih();
+            mdl_musteri_islemgecmisilist.addRow(row_musteri_islemgecmisilist);
         }
     }
 
