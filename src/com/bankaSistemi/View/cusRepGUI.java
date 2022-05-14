@@ -221,7 +221,7 @@ public class cusRepGUI extends JFrame {
             row_user_list[0] = obj.getFullName();
             row_user_list[1] = obj.getTelNo();
             row_user_list[2] = obj.getTcNo();
-            row_user_list[3] = obj.getAdress();
+            row_user_list[3] = obj.getAddress();
             row_user_list[4] = obj.getEmail();
             row_user_list[5] = obj.getTemsilci_tc_no();
             row_user_list[6] = obj.getSifre();
@@ -250,7 +250,7 @@ public class cusRepGUI extends JFrame {
         Helper.setLayout();
         CustomerRepresentative cusrep1 = new CustomerRepresentative();
         cusrep1.setFullName("Berkay Kazkılınç");
-        cusrep1.setAdress("İstanbul");
+        cusrep1.setAddress("İstanbul");
         cusrep1.setEmail("berkaykazkilinc@gmail.com");
         cusrep1.setTcNo("12345678999");
         cusrep1.setTelNo("5059300071");

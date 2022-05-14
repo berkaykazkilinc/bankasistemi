@@ -1,24 +1,29 @@
 package com.bankaSistemi.Model;
 
-import java.util.ArrayList;
-
 import com.bankaSistemi.Helper.DBConnector;
-import com.bankaSistemi.Helper.Helper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 
 
 public class Transaction {
+
     int islem_no;
+
     String kaynak;
+
     String hedef;
+
     String islem_turu;
+
     int tutar;
+
     int kaynak_bakiye;
+
     int hedef_bakiye;
+
     String tarih;
 
     public int getIslem_no() {
@@ -85,16 +90,15 @@ public class Transaction {
         this.tarih = tarih;
     }
 
-        public static ArrayList<Transaction> getTransactionList(int islem_sayisi){
+    public static ArrayList<Transaction> getTransactionList(int islem_sayisi) {
         ArrayList<Transaction> TransactionList = new ArrayList<>();
         String query = " SELECT * FROM islem_tablosu ORDER BY islem_no DESC LIMIT ? ";
         Transaction obj;
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
-            pr.setInt(1,islem_sayisi);
+            pr.setInt(1, islem_sayisi);
             ResultSet rs = pr.executeQuery();
-            while (rs.next())
-            {
+            while (rs.next()) {
                 obj = new Transaction();
                 obj.setIslem_no(rs.getInt("islem_no"));
                 obj.setKaynak(rs.getString("kaynak"));

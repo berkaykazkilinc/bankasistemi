@@ -1,7 +1,6 @@
 package com.bankaSistemi.Model;
 
 import com.bankaSistemi.Helper.DBConnector;
-import com.bankaSistemi.Helper.Helper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -71,7 +70,7 @@ public class Talep {
         Talep obj;
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
-            pr.setString(1,tc);
+            pr.setString(1, tc);
             ResultSet rs = pr.executeQuery();
             while (rs.next()) {
                 obj = new Talep();
@@ -89,26 +88,25 @@ public class Talep {
         return hesaptalepList;
     }
 
-    public static boolean talepDelete(int istek_id)
-    {
+    public static boolean talepDelete(int istek_id) {
         String query = "DELETE FROM istek_tablosu WHERE istek_id = ? ";
 
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
-            pr.setInt(1,istek_id);
+            pr.setInt(1, istek_id);
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return true;
     }
-    public static boolean talepOnay(int istek_id)
-    {
+
+    public static boolean talepOnay(int istek_id) {
         String query = "SELECT tc_no,doviz_turu FROM istek_tablosu WHERE istek_id = ? ";
 
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
-            pr.setInt(1,istek_id);
+            pr.setInt(1, istek_id);
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();

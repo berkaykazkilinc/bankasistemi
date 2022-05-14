@@ -1,7 +1,6 @@
 package com.bankaSistemi.Model;
 
 import com.bankaSistemi.Helper.DBConnector;
-import com.bankaSistemi.Helper.Helper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,10 +10,13 @@ import java.util.ArrayList;
 
 public class Credit {
 
-        float kredi_faiz_orani;
-        float gecikme_faiz_oranı;
-        boolean guncellik;
-        int kredi_oran_id;
+    float kredi_faiz_orani;
+
+    float gecikme_faiz_oranı;
+
+    boolean guncellik;
+
+    int kredi_oran_id;
 
     public float getKredi_faiz_orani() {
         return kredi_faiz_orani;
@@ -71,8 +73,7 @@ public class Credit {
         return creditList;
     }
 
-    public static boolean creditCheck()
-    {
+    public static boolean creditCheck() {
         String sql = "SELECT is_uptodate FROM kredi_oran_tablosu WHERE is_uptodate = 1";
 
         try {
@@ -84,11 +85,9 @@ public class Credit {
         return true;
     }
 
-    public static void creditGuncellikSıfırlama()
-    {
+    public static void creditGuncellikSıfırlama() {
 
-        if(Credit.creditCheck())
-        {
+        if (Credit.creditCheck()) {
             String sql2 = "UPDATE kredi_oran_tablosu SET is_uptodate = 0 WHERE is_uptodate = 1";
             try {
                 Statement st = DBConnector.getInstance().prepareStatement(sql2);
@@ -100,27 +99,23 @@ public class Credit {
 
     }
 
-    public static boolean creditAdd(float kredi_faizOrani,float gecikme_faizOrani)
-    {
+    public static boolean creditAdd(float kredi_faizOrani, float gecikme_faizOrani) {
 
-        if(creditCheck())
-        {
+        if (creditCheck()) {
             Credit.creditGuncellikSıfırlama();
         }
         String query = "INSERT INTO kredi_oran_tablosu (faiz_orani,gecikme_faiz_orani,is_uptodate) VALUES (?,?,?)";
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
-            pr.setFloat(1,kredi_faizOrani);
-            pr.setFloat(2,gecikme_faizOrani);
-            pr.setBoolean(3,true);
+            pr.setFloat(1, kredi_faizOrani);
+            pr.setFloat(2, gecikme_faizOrani);
+            pr.setBoolean(3, true);
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return true;
     }
-
-
 
 
 }

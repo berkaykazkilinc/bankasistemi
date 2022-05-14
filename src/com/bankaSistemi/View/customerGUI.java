@@ -2,13 +2,12 @@ package com.bankaSistemi.View;
 
 import com.bankaSistemi.Helper.*;
 import com.bankaSistemi.Model.Account;
+import com.bankaSistemi.Model.Currency;
 import com.bankaSistemi.Model.Customer;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class customerGUI extends JFrame {
 
@@ -18,7 +17,6 @@ public class customerGUI extends JFrame {
     private Customer customer;
     private JTable tbl_bilgiler;
     private JPanel pnl_kredi;
-    private JPanel pnl_ozet;
     private JPanel pnl_top;
     private JLabel lbl_welcome;
     private JButton btn_logout;
@@ -49,10 +47,15 @@ public class customerGUI extends JFrame {
     private JLabel lbl_yatırılacak_hesapNo;
     private JLabel lbl_para_cek;
     private JLabel lbl_cekilecek_hesapNo;
+    private JPanel pnl_musteri_islemgecmisi;
+    private JScrollPane scrl_musteri_islemgecmisi;
+    private JTable tbl_musteri_islemgecmisi;
     private DefaultTableModel mdl_userlist;
     private Object[] row_user_list;
+    private DefaultTableModel mdl_musteri_islemgecmisilist;
     private DefaultTableModel mdl_hesaplist;
     private Object[] row_hesap_list;
+    private Object[] row_musteri_islemgecmisilist;
 
     public customerGUI(Customer customer) {
 
@@ -93,6 +96,16 @@ public class customerGUI extends JFrame {
         tbl_hesaplar.setModel(mdl_hesaplist);
         tbl_hesaplar.getTableHeader().setReorderingAllowed(false);
 
+        // musteri islem gecmisi tablosu
+        mdl_musteri_islemgecmisilist = new DefaultTableModel();
+        Object[] col_cusislemgecmislist = {"İşlem No","Kaynak","Hedef","İşlem Türü","Tutar","Kaynak Bakiye","Hedef Bakiye","Tarih"};
+        mdl_musteri_islemgecmisilist.setColumnIdentifiers(col_cusislemgecmislist);
+
+        row_musteri_islemgecmisilist = new Object[col_cusislemgecmislist.length];
+
+        tbl_musteri_islemgecmisi.setModel(mdl_musteri_islemgecmisilist);
+        tbl_musteri_islemgecmisi.getTableHeader().setReorderingAllowed(false);
+
         loadCustomerBilgilerModel();
         loadHesaplarModel();
 
@@ -122,10 +135,7 @@ public class customerGUI extends JFrame {
 
         btn_hesapAc.addActionListener(e -> {
             if (Helper.isFieldEmpty(fld_hesAc_doviztur)) {
-                Helper.showMessage("fill");
-            } else {
-                String doviz_tur = fld_hesAc_doviztur.getText();
-                if (Account.accountAdd(doviz_tur, customer)) {
+                if (Account.accountAdd("Türk Lirası", customer)) {
                     Helper.showMessage("done");
                     loadHesaplarModel();
 
@@ -133,6 +143,23 @@ public class customerGUI extends JFrame {
                 } else {
                     Helper.showMessage("error");
                 }
+            } else {
+                String doviz_tur = fld_hesAc_doviztur.getText();
+                Currency findCurrency = Currency.getFetchbyDovizAd(doviz_tur);
+                if(findCurrency == null){
+                    Helper.showMessage("Bu para birimi mevcut değil !");
+                }
+                else{
+                    if (Account.accountAdd(doviz_tur, customer)) {
+                        Helper.showMessage("done");
+                        loadHesaplarModel();
+
+                        fld_hesAc_doviztur.setText(null);
+                    } else {
+                        Helper.showMessage("error");
+                    }
+                }
+
 
 
             }
@@ -236,7 +263,7 @@ public class customerGUI extends JFrame {
             row_user_list[0] = obj.getFullName();
             row_user_list[1] = obj.getTelNo();
             row_user_list[2] = obj.getTcNo();
-            row_user_list[3] = obj.getAdress();
+            row_user_list[3] = obj.getAddress();
             row_user_list[4] = obj.getEmail();
             row_user_list[5] = obj.getTemsilci_tc_no();
             row_user_list[6] = obj.getSifre();

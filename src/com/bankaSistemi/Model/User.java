@@ -1,24 +1,23 @@
 package com.bankaSistemi.Model;
 
-import com.bankaSistemi.Helper.DBConnector;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-
 public class User {
+
     private String fullName;
+
     private String telNo;
+
     private String tcNo;
-    private String adress;
+
+    private String address;
+
     private String email;
+
     private String type;
+
 
 
     public User() {
     }
-
 
     public String getFullName() {
         return fullName;
@@ -44,12 +43,12 @@ public class User {
         this.tcNo = tcNo;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getEmail() {
@@ -67,8 +66,6 @@ public class User {
     public void setType(String type) {
         this.type = type;
     }
-
-
 
 
 }

@@ -6,7 +6,6 @@ import com.bankaSistemi.Helper.Helper;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 public class Customer extends User {
@@ -93,7 +92,7 @@ public class Customer extends User {
                 obj.setFullName(rs.getString("ad_soyad"));
                 obj.setTelNo(rs.getString("telefon"));
                 obj.setTcNo(rs.getString("tc_no"));
-                obj.setAdress(rs.getString("adres"));
+                obj.setAddress(rs.getString("adres"));
                 obj.setEmail(rs.getString("e_posta"));
                 obj.setTemsilci_tc_no(rs.getString("temsilci_tc_no"));
                 obj.setSifre(rs.getString("sifre"));
@@ -118,7 +117,7 @@ public class Customer extends User {
                 obj.setFullName(rs.getString("ad_soyad"));
                 obj.setTelNo(rs.getString("telefon"));
                 obj.setTcNo(rs.getString("tc_no"));
-                obj.setAdress(rs.getString("adres"));
+                obj.setAddress(rs.getString("adres"));
                 obj.setEmail(rs.getString("e_posta"));
                 obj.setTemsilci_tc_no(rs.getString("temsilci_tc_no"));
                 obj.setSifre(rs.getString("sifre"));

@@ -128,4 +128,25 @@ public class Currency {
         }
         return true;
     }
+   /* public static boolean currencyVarMi(String doviz_adi)
+    {
+        String query = "SELECT doviz_turu FROM doviz_tablosu WHERE doviz_turu = ?";
+        Currency findCurrency = Currency.getFetchbyDovizAd(doviz_adi);
+        if(findCurrency == null){
+            Helper.showMessage("Bu para birimi mevcut değil !");
+            return false;
+        }
+
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+
+            pr.setFloat(1,kur);
+            pr.setString(2,doviz_adi);
+
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }*/
 }
