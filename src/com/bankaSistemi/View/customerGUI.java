@@ -1,10 +1,7 @@
 package com.bankaSistemi.View;
 
 import com.bankaSistemi.Helper.*;
-import com.bankaSistemi.Model.Account;
-import com.bankaSistemi.Model.Currency;
-import com.bankaSistemi.Model.Customer;
-import com.bankaSistemi.Model.Transaction;
+import com.bankaSistemi.Model.*;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -137,12 +134,18 @@ public class customerGUI extends JFrame {
 
         btn_hesapAc.addActionListener(e -> {
             if (Helper.isFieldEmpty(fld_hesAc_doviztur)) {
-                if (Account.accountAdd("Türk Lirası", customer)) {
+               /* if (Account.accountAdd("Türk Lirası", customer)) {
                     Helper.showMessage("done");
                     loadHesaplarModel();
 
                     fld_hesAc_doviztur.setText(null);
-                } else {
+                }*/
+                if(Talep.acmaTalebiOlustur(customer.getTcNo(),"Türk Lirası"))
+                {
+                    Helper.showMessage("Hesap Açma Talebiniz Alınmıştır.");
+                    loadHesaplarModel();
+                }
+                else {
                     Helper.showMessage("error");
                 }
             } else {
@@ -152,12 +155,18 @@ public class customerGUI extends JFrame {
                     Helper.showMessage("Bu para birimi mevcut değil !");
                 }
                 else{
-                    if (Account.accountAdd(doviz_tur, customer)) {
+                   /* if (Account.accountAdd(doviz_tur, customer)) {
                         Helper.showMessage("done");
                         loadHesaplarModel();
 
                         fld_hesAc_doviztur.setText(null);
-                    } else {
+                    } */
+                    if(Talep.acmaTalebiOlustur(customer.getTcNo(),doviz_tur))
+                    {
+                        Helper.showMessage("Hesap Açma Talebiniz Alınmıştır.");
+                        loadHesaplarModel();
+                    }
+                    else {
                         Helper.showMessage("error");
                     }
                 }
@@ -171,14 +180,21 @@ public class customerGUI extends JFrame {
                 Helper.showMessage("fill");
             } else {
                 int hesap_no = Integer.parseInt(fld_hesapSil_hesapNo.getText());
-                if (Account.accountDelete(hesap_no)) {
+                String doviz_tur = Talep.dovizTuruBul(hesap_no);
+                if(Talep.silmeTalebiOlustur(hesap_no,customer.getTcNo(),doviz_tur)){
+                    Helper.showMessage("Hesap Silme Talebiniz Alınmıştır.");
+                }
+
+                else {
+                    Helper.showMessage("error");
+                }
+               /* if (Account.accountDelete(hesap_no)) {
                     Helper.showMessage("done");
                     loadHesaplarModel();
                     fld_hesapSil_hesapNo.setText(null);
 
-                } else {
-                    Helper.showMessage("error");
-                }
+                } */
+
             }
         });
         btn_paratransferi.addActionListener(e -> {

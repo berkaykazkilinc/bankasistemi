@@ -66,15 +66,15 @@ public class Account {
         this.tc_no = tc_no;
     }
 
-    public static boolean accountAdd2(String doviz_turu,Customer customer)
+    public static boolean accountAdd2(String doviz_turu,String tc_no)
     {
-        String query = "INSERT INTO istek_tablosu (tc_no,istek_turu,doviz_turu,onay_durumu) VALUES (?,?,?,?)";
+        String query = "INSERT INTO hesap_tablosu (doviz_turu,bakiye,tc_no,kullanici_turu) VALUES (?,?,?,?)";
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
-            pr.setString(1,customer.getTcNo());
-            pr.setString(2,"Hesap Açma");
-            pr.setString(3,doviz_turu);
-            pr.setString(4,"Onay Bekliyor");
+            pr.setString(1,doviz_turu);
+            pr.setInt(2,0);
+            pr.setString(3,tc_no);
+            pr.setString(4,"Müşteri");
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();

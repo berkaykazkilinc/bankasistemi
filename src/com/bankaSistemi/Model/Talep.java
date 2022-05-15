@@ -1,6 +1,7 @@
 package com.bankaSistemi.Model;
 
 import com.bankaSistemi.Helper.DBConnector;
+import com.bankaSistemi.Helper.Helper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -89,11 +90,12 @@ public class Talep {
     }
 
     public static boolean talepDelete(int istek_id) {
-        String query = "DELETE FROM istek_tablosu WHERE istek_id = ? ";
+        String query = "UPDATE istek_tablosu SET onay_durumu = ? WHERE istek_id = ? ";
 
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
-            pr.setInt(1, istek_id);
+            pr.setString(1,"Reddedildi");
+            pr.setInt(2, istek_id);
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -101,16 +103,137 @@ public class Talep {
         return true;
     }
 
-    public static boolean talepOnay(int istek_id) {
-        String query = "SELECT tc_no,doviz_turu FROM istek_tablosu WHERE istek_id = ? ";
+    public static boolean talepOnaylaVeSil(int istek_id) {
+        String query = "UPDATE istek_tablosu SET onay_durumu = ? WHERE istek_id = ? ";
+        String query2 = "SELECT hesap_no FROM istek_tablosu WHERE istek_id = ?";
+        int hesap_no;
 
         try {
             PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
-            pr.setInt(1, istek_id);
+            pr.setString(1,"Onaylandı");
+            pr.setInt(2, istek_id);
+            try {
+                PreparedStatement pr2 = DBConnector.getInstance().prepareStatement(query2);
+                pr2.setInt(1,istek_id);
+                ResultSet rs = pr2.executeQuery();
+                rs.next();
+                hesap_no = rs.getInt("hesap_no");
+                Account.accountDelete(hesap_no);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+    public static boolean talepOnaylaVeAc(int istek_id) {
+        String query = "UPDATE istek_tablosu SET onay_durumu = ? WHERE istek_id = ? ";
+        String query2 = "SELECT tc_no,doviz_turu FROM istek_tablosu WHERE istek_id = ?";
+        String tc;
+        String dovizturu;
+
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,"Onaylandı");
+            pr.setInt(2, istek_id);
+            try {
+                PreparedStatement pr2 = DBConnector.getInstance().prepareStatement(query2);
+                pr2.setInt(1,istek_id);
+                ResultSet rs = pr2.executeQuery();
+                rs.next();
+                tc = rs.getString("tc_no");
+                dovizturu= rs.getString("doviz_turu");
+                Account.accountAdd2(dovizturu,tc);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    public static boolean silmeTalebiOlustur(int hesap_no,String tc_no,String doviz_turu) {
+        String query = "INSERT INTO istek_tablosu(hesap_no,tc_no,istek_turu,doviz_turu) VALUES (?,?,?,?) ";
+        String query2= "SELECT bakiye FROM hesap_tablosu WHERE hesap_no = ?";
+        Account findCurrency = Account.getFetchbyHesapNo(hesap_no);
+        float bakiye;
+        if(findCurrency == null){
+            Helper.showMessage("Bu hesap mevcut değil !");
+            return false;
+        }
+        try {
+
+            PreparedStatement pr2 = DBConnector.getInstance().prepareStatement(query2);
+            pr2.setInt(1,hesap_no);
+            ResultSet rs = pr2.executeQuery();
+            rs.next();
+            bakiye = rs.getFloat("bakiye");
+            if(bakiye>0){
+                Helper.showMessage("Bakiyeniz 0 Değil !");
+                return false;
+            }
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setInt(1,hesap_no);
+            pr.setString(2, tc_no);
+            pr.setString(3, "Hesap Silme");
+            pr.setString(4, doviz_turu);
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return true;
     }
+    public static boolean acmaTalebiOlustur(String tc_no,String doviz_turu) {
+        String query = "INSERT INTO istek_tablosu(tc_no,istek_turu,doviz_turu) VALUES (?,?,?) ";
+        try {
+
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1, tc_no);
+            pr.setString(2, "Hesap Açma");
+            pr.setString(3, doviz_turu);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+    public static String dovizTuruBul(int hesap_no){
+        String query = "SELECT doviz_turu FROM hesap_tablosu WHERE hesap_no = ? ";
+        String doviz;
+
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setInt(1,hesap_no);
+            ResultSet rs = pr.executeQuery();
+            rs.next();
+            doviz = rs.getString("doviz_turu");
+            return doviz;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String TalepTuruBul(int istek_id){
+        String query = "SELECT istek_turu FROM istek_tablosu WHERE istek_id = ? ";
+        String talep;
+        try {
+            PreparedStatement pr = DBConnector.getInstance().prepareStatement(query);
+            pr.setInt(1,istek_id);
+            ResultSet rs = pr.executeQuery();
+            rs.next();
+            talep = rs.getString("istek_turu");
+            return talep;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

@@ -211,6 +211,26 @@ public class cusRepGUI extends JFrame {
 
         btn_onayla.addActionListener(e -> {
             int islem_id = Integer.parseInt(fld_islemid.getText());
+            String istek_turu = Talep.TalepTuruBul(islem_id);
+            if(istek_turu.equals("Hesap Silme")){
+                if (Talep.talepOnaylaVeSil(islem_id))
+                {
+                    Helper.showMessage("Hesap Silindi");
+                    loadHesapTalepModel();
+                }
+            }
+            else if(istek_turu.equals("Hesap Açma"))
+            {
+                if (Talep.talepOnaylaVeAc(islem_id))
+                {
+                    Helper.showMessage("Hesap Açıldı");
+                    loadHesapTalepModel();
+                }
+            }
+            else {
+                Helper.showMessage("error");
+            }
+
 
         });
     }
