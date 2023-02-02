@@ -3,6 +3,8 @@ gerekli işlemleri gerçekleyen bir uygulama geliştirilmiştir.
 
 Veri tabanındaki tüm tablolar en az 3NF formatındadır
 
+Projede Java,Swing teknolojileri ve veritabanında PostgreSQL kullanılmıştır.
+
 
 # Sistemdeki Roller
 ## ● Müşteriler
